@@ -1081,6 +1081,18 @@ body.modal-open {
     border-left: 3px solid rgb(255, 107, 53);
 }
 
+.weapon-item.rarity-5 {
+    border-left: 3px solid var(--rarity-5);
+}
+
+.weapon-item.rarity-4 {
+    border-left: 3px solid var(--rarity-4);
+}
+
+.weapon-item.rarity-3 {
+    border-left: 3px solid var(--rarity-3);
+}
+
 .weapon-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
