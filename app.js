@@ -462,6 +462,15 @@ function loadOperators() {
         case 'name-asc':
             filteredOperators.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
             break;
+        case 'name-desc':
+            filteredOperators.sort((a, b) => b.name.localeCompare(a.name, 'zh-TW'));
+            break;
+        case 'class':
+            filteredOperators.sort((a, b) => (classNames[a.class] || a.class).localeCompare(classNames[b.class] || b.class, 'zh-TW'));
+            break;
+        case 'element':
+            filteredOperators.sort((a, b) => (elementNames[a.element] || a.element).localeCompare(elementNames[b.element] || b.element, 'zh-TW'));
+            break;
     }
 
     grid.innerHTML = '';
@@ -610,18 +619,18 @@ function showOperatorDetail(operatorId) {
     ` : '';
 
     const teammates = getRecommendedTeammates(operator);
-    let teammatesHtml = '';
-    teammates.forEach(tm => {
-        const tmIconUrl = tm.icon ? `media/operators/${tm.icon}` : '';
-        teammatesHtml += `
-            <div class="teammate-card" onclick="showOperatorDetail(${tm.id})">
-                <div class="icon">
-                    ${tmIconUrl ? `<img src="${tmIconUrl}" alt="${tm.name}" style="width:100%;height:100%;object-fit:cover;">` : tm.name.charAt(0)}
-                </div>
-                <div class="name">${tm.name}</div>
-            </div>
-        `;
-    });
+     let teammatesHtml = '';
+     teammates.forEach(tm => {
+         const tmIconUrl = tm.icon ? `media/operators/${tm.icon}` : '';
+         teammatesHtml += `
+             <div class="teammate-card rarity-${tm.rarity}" onclick="showOperatorDetail(${tm.id})">
+                 <div class="icon">
+                     ${tmIconUrl ? `<img src="${tmIconUrl}" alt="${tm.name}" style="width:100%;height:100%;object-fit:cover;">` : tm.name.charAt(0)}
+                 </div>
+                 <div class="name">${tm.name}</div>
+             </div>
+         `;
+     });
 
     let suitableWeapons = weaponsData.filter(w => {
         return w.rarityNum >= operator.rarity - 1 && w.type === operator.weapon;
@@ -689,7 +698,7 @@ function showOperatorDetail(operatorId) {
     modalBody.innerHTML = `
         ${fullImageUrl ? `<div class="detail-full-image"><img src="${fullImageUrl}" alt="${operator.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
         <div class="detail-header">
-            <div class="detail-icon">
+            <div class="detail-icon rarity-${operator.rarity}">
                 ${iconUrl ? `<img src="${iconUrl}" alt="${operator.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : operator.name.charAt(0)}
             </div>
             <div class="detail-info">
