@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>明日方舟終末地小工具</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon">E</div>
+                    <div class="logo-text">終末地 <span>小工具</span></div>
+                </div>
+                <nav>
+                    <button class="active" data-tab="operators">角色</button>
+                    <button data-tab="weapons">武器</button>
+                    <button data-tab="gears">基質</button>
+                </nav>
+                <button class="theme-toggle" id="theme-toggle" title="切換明暗主題">
+                    <span class="theme-icon">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="operators" class="tab-content active">
+            <div class="section-header">
+                <h2>角色列表</h2>
+                <p>點擊角色查看詳細資訊與推薦隊友</p>
+            </div>
+            <div class="search-box">
+                <input type="text" id="operator-search" placeholder="搜尋角色名稱..." autocomplete="off">
+                <select id="operator-sort">
+                    <option value="rarity-desc" selected>星數 高→低</option>
+                    <option value="rarity-asc">星數 低→高</option>
+                    <option value="name-asc">名稱 A→Z</option>
+                    <option value="name-desc">名稱 Z→A</option>
+                    <option value="class">職業</option>
+                    <option value="element">屬性</option>
+                </select>
+            </div>
+            <div class="filter-buttons" id="operator-filters">
+                <div class="filter-row">
+                    <span class="filter-label">星數：</span>
+                    <button class="filter-btn active" data-orarity="all">全部</button>
+                    <button class="filter-btn" data-orarity="6">六星</button>
+                    <button class="filter-btn" data-orarity="5">五星</button>
+                    <button class="filter-btn" data-orarity="4">四星</button>
+                </div>
+                <div class="filter-row">
+                    <span class="filter-label">屬性：</span>
+                     <button class="filter-btn active" data-element="all">全部</button>
+                     <button class="filter-btn" data-element="Nature">自然</button>
+                     <button class="filter-btn" data-element="Heat">灼熱</button>
+                     <button class="filter-btn" data-element="Physical">物理</button>
+                     <button class="filter-btn" data-element="Cryo">寒冷</button>
+                     <button class="filter-btn" data-element="Electric">電擊</button>
+                </div>
+                <div class="filter-row">
+                    <span class="filter-label">職業：</span>
+                    <button class="filter-btn active" data-class="all">全部</button>
+                    <button class="filter-btn" data-class="Striker">突擊</button>
+                    <button class="filter-btn" data-class="Guard">近衛</button>
+                    <button class="filter-btn" data-class="Caster">術師</button>
+                    <button class="filter-btn" data-class="Vanguard">先鋒</button>
+                    <button class="filter-btn" data-class="Defender">重裝</button>
+                    <button class="filter-btn" data-class="Support">輔助</button>
+                </div>
+            </div>
+            <div id="operators-grid" class="grid grid-operators"></div>
+        </div>
+
+        <div id="weapons" class="tab-content">
+            <div class="section-header">
+                <h2>武器圖鑑</h2>
+                <p>瀏覽所有武器屬性与適用基質</p>
+            </div>
+            <div class="search-box">
+                <input type="text" id="weapon-search" placeholder="搜尋武器名稱..." autocomplete="off">
+                <select id="sort-select">
+                    <option value="rarity-desc" selected>星數 高→低</option>
+                    <option value="rarity-asc">星數 低→高</option>
+                    <option value="name-asc">名稱 A→Z</option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <div class="filter-row">
+                    <span class="filter-label">稀有度：</span>
+                    <button class="filter-btn active" data-rarity="all">全部</button>
+                    <button class="filter-btn" data-rarity="6">六星</button>
+                    <button class="filter-btn" data-rarity="5">五星</button>
+                    <button class="filter-btn" data-rarity="4">四星</button>
+                    <button class="filter-btn" data-rarity="3">三星</button>
+                </div>
+                <div class="filter-row">
+                    <span class="filter-label">種類：</span>
+                    <button class="filter-btn type-btn active" data-type="all">全部</button>
+                    <button class="filter-btn type-btn" data-type="Sword">單手劍</button>
+                    <button class="filter-btn type-btn" data-type="Greatsword">雙手劍</button>
+                    <button class="filter-btn type-btn" data-type="Polearm">長柄武器</button>
+                    <button class="filter-btn type-btn" data-type="Arts Unit">施術單元</button>
+                    <button class="filter-btn type-btn" data-type="Handcannon">手銃</button>
+                </div>
+            </div>
+            <div id="weapons-grid" class="grid grid-weapons"></div>
+        </div>
+
+        <div id="gears" class="tab-content">
+            <div class="section-header">
+                <h2>基質列表</h2>
+                <p>選擇掉落區域的,自選詞條</p>
+            </div>
+            <div class="zone-buttons">
+                <button class="zone-btn" data-zone="all">全部區域</button>
+                <button class="zone-btn" data-zone="樞紐區">樞紐區</button>
+                <button class="zone-btn" data-zone="源石研究園">源石研究園</button>
+                <button class="zone-btn" data-zone="礦脈源區">礦脈源區</button>
+                <button class="zone-btn" data-zone="供能高地">供能高地</button>
+                <button class="zone-btn" data-zone="武陵城">武陵城</button>
+            </div>
+            <div id="gear-filters" class="filter-buttons" style="display:none;">
+                <div class="filter-row gear-mainstat-row">
+                    <span class="filter-label">基礎屬性：</span>
+                </div>
+                <div class="filter-row gear-substat-row">
+                    <span class="filter-label">附加屬性：</span>
+                </div>
+                <div class="filter-row gear-skill-row">
+                    <span class="filter-label">技能屬性：</span>
+                </div>
+            </div>
+            <div id="gear-results" style="display:none;">
+                <div class="section-header" style="margin-top: 24px;">
+                    <h2><span id="gear-zone-name"></span> - 適用的武器 (<span id="gear-weapon-count">0</span>)</h2>
+                </div>
+                <div id="gear-weapons-grid" class="grid grid-weapons"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">角色詳情</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>明日方舟：終末地 攻略資料庫 - 僅供學習交流使用</p>
+        </div>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="operators.js"></script>
+    <script src="weapons.js"></script>
+    <script src="gears.js"></script>
+    <script src="utils.js"></script>
+    <script src="performance.js"></script>
+    <script src="search-index.js"></script>
+    <script src="ui-components.js"></script>
+    <script src="app.js"></script>
+    <script src="tests.js"></script>
+</body>
+</html>
