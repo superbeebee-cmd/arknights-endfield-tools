@@ -637,8 +637,8 @@ function showOperatorDetail(operatorId) {
         
         ${operator.trait ? `
         <div class="detail-section">
-            <h4>角色特性</h4>
-            <p style="color:var(--accent); font-weight:600; font-size:15px;">
+            <h4>⭐ 角色特性</h4>
+            <p style="color:#fff; font-weight:600; font-size:15px; background:linear-gradient(135deg, rgba(0,212,170,0.2), rgba(0,168,255,0.15)); padding:12px 16px; border-radius:8px; border-left:3px solid var(--accent); line-height:1.6;">
                 ${operator.trait}
             </p>
         </div>

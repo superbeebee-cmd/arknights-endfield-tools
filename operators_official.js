@@ -173,7 +173,7 @@ const operatorsData = [
         weapon: "Sword",
         faction: "終末地工業",
         description: "Z7行動組，秋栗，很高興加入這次行動！請期待我的表現！秋栗作為年輕的商學院優等生，自薦加入終末地工業。她憑一己之力建立了Z7行動組，短短幾個月內完成了招募、訓練並投入實戰。",
-        trait: "Z7組長｜技力回復與灼熱輔助",
+        trait: "Z7組長｜灼熱附著、技力回復",
         exclusiveWeapon: "",
         mainStat: "敏捷提升",
         subStat: "灼熱傷害提升",
@@ -211,9 +211,9 @@ const operatorsData = [
         class: "Support",
         element: "Electric",
         weapon: "Arts Unit",
-        faction: "卡西米亞",
-        description: "熱情的卡西米亞術師，專精於雷電法術。輸出型法師，电磁傷害能夠貫穿敵人防禦。",
-        trait: "卡西米亞術師｜電擊與異常狀態輔助",
+        faction: "終末地工業",
+        description: "終末地Z7行動組成員，負責輔助與源石技術顧問的工作。頭腦聰明，思維跳躍，不擅於感知他人情緒，與人溝通時常常會作出和氣氛格格不入的發言，讓隊員們頗為頭痛。不過，在源石技藝上，安塔爾其實擁有著極為出眾的天賦，雖然對此他並無太多自覺。",
+        trait: "Z7行動組｜法術脆弱、增幅",
         exclusiveWeapon: "",
         mainStat: "智識提升",
         subStat: "電磁傷害提升",
@@ -272,8 +272,8 @@ const operatorsData = [
         element: "Physical",
         weapon: "Greatsword",
         faction: "終末地工業",
-        description: "沉默寡言的防禦型戰士，擅於保護隊友。具備高生命力與堅固防禦，是團隊的前線防護核心。",
-        trait: "沉默戰士｜護盾與反擊輔助",
+        description: "需要掩護嗎？我會全力以赴的。終末地Z7行動組成員，負責掩護與後勤工作。卡契爾曾接受過完整的軍事訓練，大量的相關知識儲備讓他常能在關鍵時刻為隊友們提供合適的建議。幼年時因意外導致的病痛沒有將他擊垮，反而促使他逐漸成長為一名堅忍不拔的戰士。",
+        trait: "Z7行動組｜庇護、護盾、虛弱",
         exclusiveWeapon: "",
         mainStat: "力量提升",
         subStat: "生命提升",
@@ -331,9 +331,9 @@ const operatorsData = [
         class: "Guard",
         element: "Cryo",
         weapon: "Polearm",
-        faction: "謝拉格",
-        description: "謝拉格貴族出身的冰雪守衛，具備穩定的輸出與反擊能力，能以寒冷傷害慢下敵人速度，為隊友創造進攻窗口。",
-        trait: "謝拉格貴族｜寒冷附著與物理脆弱",
+        faction: "終末地工業",
+        description: "呃……我感覺自己的身上正在承受整個世界的重擔……主要是膝蓋……終末地Z7行動組成員，負責情報收集和通信任務，體力很差。埃特拉總是被不幸所環繞，時不時會語出驚人。她因為自身感官的遲鈍反而有一些刺激性的愛好。理想是安穩地度過一生。",
+        trait: "Z7行動組｜寒冷附著、擊飛、物理脆弱",
         exclusiveWeapon: "",
         mainStat: "敏捷提升",
         subStat: "寒冷傷害提升",
@@ -352,8 +352,8 @@ const operatorsData = [
         element: "Nature",
         weapon: "Handcannon",
         faction: "終末地工業",
-        description: "活潑開朗的自然系術師，擅長自然法術。手砲型法師，自然傷害具控場能力，能穩定控場並提供穩定輸出。",
-        trait: "自然術師｜自然與寒冷控制輔助",
+        description: "擾亂？牽制？還是……一步到位？終末地Z7行動組成員，負責偵察和戰線擾亂工作。螢石來自文明環帶邊緣的開拓區，在一次又一次遷移和流浪中鍛煉出了與眾不同的觀察力。比起手中雙銓，她如同讀心一般的敏銳感知和惡劣的性格才是最大的麻煩來源。",
+        trait: "Z7行動組｜自然附著、減速",
         exclusiveWeapon: "",
         mainStat: "智識提升",
         subStat: "自然傷害提升",
@@ -463,6 +463,8 @@ const operatorsData = [
         gearRecommendation: { setName: "M.I.警用", pieces: ["M.I.警用罩衣", "M.I.警用手套", "M.I.警用工具組", "M.I.警用工具組"] }
     }
 ];
+
+window.operatorsData = operatorsData;
 
 // 導出數據
 if (typeof module !== 'undefined' && module.exports) {
