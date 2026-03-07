@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearchIndex();
     initApp();
     initTheme();
+    initBackToTop();
+    initToast();
 });
 
 /**
@@ -108,6 +110,51 @@ function initTheme() {
             themeToggle.querySelector('.theme-icon').textContent = isLight ? '🌙' : '☀️';
         });
     }
+}
+
+function initBackToTop() {
+    const backToTop = document.getElementById('back-to-top');
+    if (!backToTop) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+function initToast() {
+    window.showToast = function(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type]}</span>
+            <span class="toast-message">${message}</span>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('toast-hide');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    };
 }
 
 let selectedRarities = ['all'];
