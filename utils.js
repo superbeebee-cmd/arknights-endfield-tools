@@ -29,7 +29,7 @@ const classNames = {
 
 const rarityNames = { 6: '六星', 5: '五星', 4: '四星', 3: '三星' };
 const elementImageMap = {
-    'Nature': 'nature.jpg',
+    'Nature': 'Nature.jpg',
     'Heat': 'fire.jpg',
     'Physical': 'physic.jpg',
     'Cryo': 'ice.jpg',
@@ -41,7 +41,7 @@ function getOperatorCardHtml(op) {
     const iconUrl = op.icon ? `media/operators/${op.icon}` : '';
     const jobIcon = op.class ? `media/job/${op.class}.webp` : '';
     const elmFile = elementImageMap[op.element] || '';
-    const elmIcon = elmFile ? `media/elements/${elmFile}` : '';
+    const elmIcon = elmFile ? `media/elm/${elmFile}` : '';
     
     return `
         <div class="operator-icon">
