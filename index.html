@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>明日方舟終末地小工具</title>
+    <link rel="icon" href="media/ICON.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +15,7 @@
         <div class="container">
             <div class="header-inner">
                 <div class="logo">
-                    <div class="logo-icon">E</div>
+                    <img class="logo-icon" src="media/ICON.png" alt="Logo">
                     <div class="logo-text">終末地 <span>小工具</span></div>
                 </div>
                 <nav>
@@ -56,12 +57,12 @@
                 </div>
                 <div class="filter-row">
                     <span class="filter-label">屬性：</span>
-                    <button class="filter-btn active" data-element="all">全部</button>
-                    <button class="filter-btn" data-element="Nature">自然</button>
-                    <button class="filter-btn" data-element="fire">灼熱</button>
-                    <button class="filter-btn" data-element="Physical">物理</button>
-                    <button class="filter-btn" data-element="ice">寒冷</button>
-                    <button class="filter-btn" data-element="Electric">電擊</button>
+                     <button class="filter-btn active" data-element="all">全部</button>
+                     <button class="filter-btn" data-element="Nature">自然</button>
+                     <button class="filter-btn" data-element="Heat">灼熱</button>
+                     <button class="filter-btn" data-element="Physical">物理</button>
+                     <button class="filter-btn" data-element="Cryo">寒冷</button>
+                     <button class="filter-btn" data-element="Electric">電擊</button>
                 </div>
                 <div class="filter-row">
                     <span class="filter-label">職業：</span>
@@ -157,18 +158,19 @@
 
     <footer>
         <div class="container">
-            <p>明日方舟：終末地 攻略資料庫 - 僅供學習交流使用</p>
+            <p>明日方舟：終末地 小工具 - 僅供學習交流使用 powered by YUKINOKO</p>
         </div>
     </footer>
 
     <script src="config.js"></script>
-    <script src="operators.js"></script>
+    <script src="operators_official.js"></script>
     <script src="weapons.js"></script>
     <script src="gears.js"></script>
     <script src="utils.js"></script>
     <script src="performance.js"></script>
     <script src="search-index.js"></script>
     <script src="ui-components.js"></script>
+    <script src="gear_tc.js"></script>
     <script src="app.js"></script>
     <script src="tests.js"></script>
 </body>

@@ -83,14 +83,8 @@ header {
 .logo-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--accent), #00a8ff);
+    object-fit: contain;
     border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 18px;
-    color: var(--bg-dark);
 }
 
 .logo-text {
@@ -492,7 +486,7 @@ main {
 }
 
 .card {
-    background: var(--bg-card);
+    background: transparent;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
@@ -506,9 +500,46 @@ main {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
+.card-operator.rarity-6:hover {
+    border-color: var(--rarity-6);
+    box-shadow: 0 8px 24px rgba(255, 107, 53, 0.3);
+}
+
+.card-operator.rarity-5:hover {
+    border-color: var(--rarity-5);
+    box-shadow: 0 8px 24px rgba(255, 193, 7, 0.3);
+}
+
+.card-operator.rarity-4:hover {
+    border-color: var(--rarity-4);
+    box-shadow: 0 8px 24px rgba(156, 107, 255, 0.3);
+}
+
+.card-operator.rarity-3:hover {
+    border-color: var(--rarity-3);
+    box-shadow: 0 8px 24px rgba(77, 208, 225, 0.3);
+}
+
 .card-operator {
     padding: 20px;
     text-align: center;
+    border-left: 3px solid var(--border-color);
+}
+
+.card-operator.rarity-6 {
+    border-left-color: var(--rarity-6);
+}
+
+.card-operator.rarity-5 {
+    border-left-color: var(--rarity-5);
+}
+
+.card-operator.rarity-4 {
+    border-left-color: var(--rarity-4);
+}
+
+.card-operator.rarity-3 {
+    border-left-color: var(--rarity-3);
 }
 
 .card-operator .operator-icon {
@@ -516,13 +547,29 @@ main {
     height: 88px;
     margin: 0 auto 12px;
     border-radius: 50%;
-    background: var(--bg-dark);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 2px solid var(--border-color);
     transition: all 0.2s ease;
     overflow: hidden;
+}
+
+.card-operator.rarity-6 .operator-icon {
+    border-color: var(--rarity-6);
+}
+
+.card-operator.rarity-5 .operator-icon {
+    border-color: var(--rarity-5);
+}
+
+.card-operator.rarity-4 .operator-icon {
+    border-color: var(--rarity-4);
+}
+
+.card-operator.rarity-3 .operator-icon {
+    border-color: var(--rarity-3);
 }
 
 .card-operator .operator-icon img {
@@ -540,6 +587,26 @@ main {
 .card-operator:hover .operator-icon {
     border-color: var(--accent);
     box-shadow: 0 0 20px var(--accent-dim);
+}
+
+.card-operator.rarity-6:hover .operator-icon {
+    border-color: var(--rarity-6);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.card-operator.rarity-5:hover .operator-icon {
+    border-color: var(--rarity-5);
+    box-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+}
+
+.card-operator.rarity-4:hover .operator-icon {
+    border-color: var(--rarity-4);
+    box-shadow: 0 0 20px rgba(156, 107, 255, 0.3);
+}
+
+.card-operator.rarity-3:hover .operator-icon {
+    border-color: var(--rarity-3);
+    box-shadow: 0 0 20px rgba(77, 208, 225, 0.3);
 }
 
 .card-operator .name {
@@ -833,7 +900,7 @@ body.modal-open {
     width: 100px;
     height: 100px;
     border-radius: 12px;
-    background: var(--bg-dark);
+    background: transparent;
     border: 2px solid var(--accent);
     display: flex;
     align-items: center;
@@ -843,6 +910,11 @@ body.modal-open {
     color: var(--accent);
     flex-shrink: 0;
 }
+
+.detail-icon.rarity-6 { border-color: var(--rarity-6); color: var(--rarity-6); }
+.detail-icon.rarity-5 { border-color: var(--rarity-5); color: var(--rarity-5); }
+.detail-icon.rarity-4 { border-color: var(--rarity-4); color: var(--rarity-4); }
+.detail-icon.rarity-3 { border-color: var(--rarity-3); color: var(--rarity-3); }
 
 .detail-info {
     flex: 1;
@@ -1081,6 +1153,18 @@ body.modal-open {
     border-left: 3px solid rgb(255, 107, 53);
 }
 
+.weapon-item.rarity-5 {
+    border-left: 3px solid var(--rarity-5);
+}
+
+.weapon-item.rarity-4 {
+    border-left: 3px solid var(--rarity-4);
+}
+
+.weapon-item.rarity-3 {
+    border-left: 3px solid var(--rarity-3);
+}
+
 .weapon-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
@@ -1191,41 +1275,84 @@ body.modal-open {
 
 .teammate-card {
     padding: 16px;
-    background: var(--bg-darker);
+    background: transparent;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-bottom: 8px;
+    border-left: 3px solid var(--border-color);
 }
 
+.teammate-card.rarity-6 { border-left-color: var(--rarity-6); }
+.teammate-card.rarity-5 { border-left-color: var(--rarity-5); }
+.teammate-card.rarity-4 { border-left-color: var(--rarity-4); }
+.teammate-card.rarity-3 { border-left-color: var(--rarity-3); }
+
 .teammate-card:hover {
-    background: var(--bg-dark);
+    background: transparent;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.teammate-card .icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 10px;
-    border-radius: 50%;
-    background: var(--bg-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--accent);
-    border: 2px solid var(--border-color);
-    overflow: hidden;
+.teammate-card.rarity-6:hover {
+    border-left-color: var(--rarity-6);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
-.teammate-card .name {
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    color: var(--text-primary);
+.teammate-card.rarity-5:hover {
+    border-left-color: var(--rarity-5);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
+
+.teammate-card.rarity-4:hover {
+    border-left-color: var(--rarity-4);
+    box-shadow: 0 4px 12px rgba(156, 107, 255, 0.3);
+}
+
+.teammate-card.rarity-3:hover {
+    border-left-color: var(--rarity-3);
+    box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);
+}
+
+.teammate-card .icon {
+     width: 64px;
+     height: 64px;
+     margin: 0 auto 10px;
+     border-radius: 50%;
+     background: transparent;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-size: 22px;
+     font-weight: 700;
+     color: var(--accent);
+     border: 2px solid var(--border-color);
+     overflow: hidden;
+ }
+
+ .teammate-card.rarity-6 .icon {
+     border-color: var(--rarity-6);
+     color: var(--rarity-6);
+ }
+ .teammate-card.rarity-5 .icon {
+     border-color: var(--rarity-5);
+     color: var(--rarity-5);
+ }
+ .teammate-card.rarity-4 .icon {
+     border-color: var(--rarity-4);
+     color: var(--rarity-4);
+ }
+ .teammate-card.rarity-3 .icon {
+     border-color: var(--rarity-3);
+     color: var(--rarity-3);
+ }
+
+ .teammate-card .name {
+     font-size: 14px;
+     font-weight: 600;
+     text-align: center;
+     color: var(--text-primary);
+ }
 
 .detail-section {
     margin-top: 24px;
@@ -1318,7 +1445,7 @@ body.modal-open {
     width: 160px;
     height: 160px;
     border-radius: 12px;
-    background: var(--bg-dark);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;

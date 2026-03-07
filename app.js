@@ -1,106 +1,4 @@
-// Gear piece to image file mapping (45 distinct images from media/gear/)
-const gearImageMap = {
-    "長息護手壹型": "item_equip_t4_suit_burst01_hand_01.webp",
-    "長息護手": "item_equip_t4_suit_burst01_hand_01.webp",
-    "長息輔助臂": "item_equip_t4_suit_burst01_edc_02.webp",
-    "長息蓄電核": "item_equip_t4_suit_burst01_edc_01.webp",
-    "長息蓄電核壹型": "item_equip_t4_suit_burst01_edc_01.webp",
-    "長息裝甲": "item_equip_t4_suit_burst01_body_01.webp",
-    "脈衝式手套": "item_equip_t1_suit_stragi01_hand_01.webp",
-    "脈衝式校準器": "item_equip_t1_suit_stragi01_edc_01.webp",
-    "脈衝式干擾服": "item_equip_t1_suit_stragi01_body_01.webp",
-    "輕超域護手": "item_equip_t4_suit_usp02_hand_01.webp",
-    "輕超域穩定盤": "item_equip_t4_suit_usp02_edc_01.webp",
-    "輕超域分析環": "item_equip_t4_suit_usp02_edc_01.webp",
-    "輕超域護板": "item_equip_t4_suit_usp02_edc_01.webp",
-    "點劍戰術手甲": "item_equip_t4_suit_phy01_hand_01.webp",
-    "點劍戰術手套": "item_equip_t4_suit_phy01_hand_01.webp",
-    "點劍火石": "item_equip_t4_suit_phy01_edc_03.webp",
-    "點劍重裝甲": "item_equip_t4_suit_phy01_body_02.webp",
-    "生物輔助手甲": "item_equip_t4_suit_heal01_hand_01.webp",
-    "生物輔助臂甲": "item_equip_t4_suit_heal01_edc_03.webp",
-    "生物輔助接駁器": "item_equip_t4_suit_heal01_edc_01.webp",
-    "生物輔助接駁器壹型": "item_equip_t4_suit_heal01_edc_01.webp",
-    "生物輔助護盾": "item_equip_t4_suit_heal01_edc_04.webp",
-    "生物輔助護板": "item_equip_t4_suit_heal01_edc_01.webp",
-    "生物輔助胸甲": "item_equip_t4_suit_heal01_body_01.webp",
-    "生物輔助重甲": "item_equip_t4_suit_heal01_body_01.webp",
-    "動火用手甲": "item_equip_t4_suit_fire_natr01_hand_02.webp",
-    "動火用手甲壹型": "item_equip_t4_suit_fire_natr01_hand_02.webp",
-    "動火用電力匣": "item_equip_t4_suit_fire_natr01_edc_01.webp",
-    "動火用測溫鏡": "item_equip_t4_suit_fire_natr01_edc_02.webp",
-    "動火用儲能匣": "item_equip_t4_suit_fire_natr01_edc_01.webp",
-    "動火用外骨骼": "item_equip_t4_suit_fire_natr01_body_01.webp",
-    "M.I.警用手環": "item_equip_t4_suit_criti01_hand_01.webp",
-    "M.I.警用手環壹型": "item_equip_t4_suit_criti01_hand_01.webp",
-    "M.I.警用手套": "item_equip_t4_suit_criti01_hand_01.webp",
-    "M.I.警用臂環": "item_equip_t4_suit_criti01_edc_03.webp",
-    "M.I.警用刺刃": "item_equip_t4_suit_criti01_edc_04.webp",
-    "M.I.警用刺刃壹型": "item_equip_t4_suit_criti01_edc_04.webp",
-    "M.I.警用工具組": "item_equip_t4_suit_criti01_edc_03.webp",
-    "M.I.警用瞄具": "item_equip_t4_suit_criti01_edc_02.webp",
-    "M.I.警用罩衣": "item_equip_t4_suit_criti01_body_02.webp",
-    "M.I.警用罩衣壹型": "item_equip_t4_suit_criti01_body_03.webp",
-    "M.I.警用罩衣貳型": "item_equip_t4_suit_criti01_body_02.webp",
-    "M.I.警用護甲": "item_equip_t4_suit_criti01_body_01.webp",
-    "潮湧手甲": "item_equip_t4_suit_burst01_hand_01.webp",
-    "濁流切割炬": "item_equip_t4_suit_burst01_edc_01.webp",
-    "懸河供氧栓": "item_equip_t4_suit_burst01_edc_02.webp",
-    "落潮輕甲": "item_equip_t4_suit_burst01_body_01.webp",
-    "碾骨小雕像": "item_equip_t4_suit_attri01_edc_06.webp",
-    "碾骨小雕像壹型": "item_equip_t4_suit_attri01_edc_06.webp",
-    "碾骨面具": "item_equip_t4_suit_attri01_edc_04.webp",
-    "碾骨面具壹型": "item_equip_t4_suit_attri01_edc_04.webp",
-    "碾骨披巾": "item_equip_t4_suit_attri01_body_04.webp",
-    "碾骨披巾壹型": "item_equip_t4_suit_attri01_body_04.webp",
-    "碾骨重護甲": "item_equip_t4_suit_attri01_body_02.webp",
-    "碾骨重護甲壹型": "item_equip_t4_suit_attri01_body_02.webp",
-    "50式應龍護手": "item_equip_t4_suit_atk02_hand_01.webp",
-    "50式應龍護手壹型": "item_equip_t4_suit_atk02_hand_01.webp",
-    "50式應龍短刃": "item_equip_t4_suit_atk02_edc_01.webp",
-    "50式應龍短刃壹型": "item_equip_t4_suit_atk02_edc_01.webp",
-    "50式應龍雷達": "item_equip_t4_suit_atk02_edc_01.webp",
-    "50式應龍輕甲": "item_equip_t4_suit_atk02_body_04.webp",
-    "50式應龍重甲": "item_equip_t4_suit_atk02_body_01.webp",
-    "拓荒耐蝕手套": "item_equip_t4_suit_atb01_hand_01.webp",
-    "拓荒增量供氧栓": "item_equip_t4_suit_atb01_edc_04.webp",
-    "拓荒通信器": "item_equip_t4_suit_atb01_edc_01.webp",
-    "拓荒通信器壹型": "item_equip_t4_suit_atb01_edc_01.webp",
-    "拓荒護甲": "item_equip_t4_suit_atb01_body_01.webp",
-    "拓荒護甲壹型": "item_equip_t4_suit_atb01_body_01.webp",
-    "拓荒護甲貳型": "item_equip_t4_suit_atb01_body_04.webp",
-    "拓荒護甲叁型": "item_equip_t4_suit_atb01_body_02.webp",
-    "紓難印章": "item_equip_t2_suit_str01_edc_01.webp",
-    "紓難印章壹型": "item_equip_t2_suit_str01_edc_01.webp",
-    "紓難識別牌": "item_equip_t2_suit_str01_edc_01.webp",
-    "紓難識別牌壹型": "item_equip_t2_suit_str01_edc_01.webp",
-    "蝕電絕緣手套": "item_equip_t2_suit_wisd01_hand_01.webp",
-    "蝕電絕緣手套壹型": "item_equip_t2_suit_wisd01_hand_01.webp",
-    "蝕電絕緣背心": "item_equip_t2_suit_wisd01_body_01.webp",
-    "蝕電防護手套": "item_equip_t2_suit_will01_hand_01.webp",
-    "天災防護手套": "item_equip_t2_suit_str01_hand_01.webp",
-    "重裝信使手套": "item_equip_t2_suit_str01_hand_01.webp",
-    "重裝信使手套壹型": "item_equip_t2_suit_str01_hand_01.webp",
-    "重裝信使手電": "item_equip_t2_suit_str01_edc_02.webp",
-    "重裝信使陀螺": "item_equip_t2_suit_str01_edc_01.webp",
-    "重裝信使夾克": "item_equip_t2_suit_str01_body_01.webp",
-    "阿伯莉手甲": "item_equip_t2_suit_str01_hand_01.webp",
-    "阿伯莉輕甲": "item_equip_t2_suit_str01_body_01.webp",
-    "阿伯莉重甲": "item_equip_t2_suit_str01_body_01.webp",
-    "巡行信使手套": "item_equip_t2_suit_agi01_hand_01.webp",
-    "巡行信使陀螺": "item_equip_t2_suit_agi01_edc_01.webp",
-    "巡行信使手電": "item_equip_t2_suit_agi01_edc_02.webp",
-    "巡行信使夾克": "item_equip_t2_suit_agi01_body_01.webp",
-    "集成化輕甲": "item_equip_t1_suit_stragi01_body_01.webp",
-    "集成化重甲": "item_equip_t1_suit_wisdwill01_body_01.webp",
-    "集成化戰術手套": "item_equip_t1_suit_stragi01_hand_01.webp",
-    "集成化陶瓷板": "item_equip_t1_suit_stragi01_edc_01.webp",
-    "四號谷地": "item_equip_t1_suit_stragi01_body_01.webp",
-    "礦場手套": "item_equip_t1_suit_stragi01_hand_01.webp",
-    "礦場護甲": "item_equip_t1_suit_stragi01_body_01.webp",
-    "礦場防護服": "item_equip_t1_suit_stragi01_body_01.webp",
-    "礦場聯絡儀": "item_equip_t1_suit_stragi01_edc_01.webp"
-};
+// Gear piece to image file mapping - loaded from gear_tc.js
 
 /**
  * 初始化應用程序
@@ -462,6 +360,15 @@ function loadOperators() {
         case 'name-asc':
             filteredOperators.sort((a, b) => a.name.localeCompare(b.name, 'zh-TW'));
             break;
+        case 'name-desc':
+            filteredOperators.sort((a, b) => b.name.localeCompare(a.name, 'zh-TW'));
+            break;
+        case 'class':
+            filteredOperators.sort((a, b) => (classNames[a.class] || a.class).localeCompare(classNames[b.class] || b.class, 'zh-TW'));
+            break;
+        case 'element':
+            filteredOperators.sort((a, b) => (elementNames[a.element] || a.element).localeCompare(elementNames[b.element] || b.element, 'zh-TW'));
+            break;
     }
 
     grid.innerHTML = '';
@@ -610,18 +517,18 @@ function showOperatorDetail(operatorId) {
     ` : '';
 
     const teammates = getRecommendedTeammates(operator);
-    let teammatesHtml = '';
-    teammates.forEach(tm => {
-        const tmIconUrl = tm.icon ? `media/operators/${tm.icon}` : '';
-        teammatesHtml += `
-            <div class="teammate-card" onclick="showOperatorDetail(${tm.id})">
-                <div class="icon">
-                    ${tmIconUrl ? `<img src="${tmIconUrl}" alt="${tm.name}" style="width:100%;height:100%;object-fit:cover;">` : tm.name.charAt(0)}
-                </div>
-                <div class="name">${tm.name}</div>
-            </div>
-        `;
-    });
+     let teammatesHtml = '';
+     teammates.forEach(tm => {
+         const tmIconUrl = tm.icon ? `media/operators/${tm.icon}` : '';
+         teammatesHtml += `
+             <div class="teammate-card rarity-${tm.rarity}" onclick="showOperatorDetail(${tm.id})">
+                 <div class="icon">
+                     ${tmIconUrl ? `<img src="${tmIconUrl}" alt="${tm.name}" style="width:100%;height:100%;object-fit:cover;">` : tm.name.charAt(0)}
+                 </div>
+                 <div class="name">${tm.name}</div>
+             </div>
+         `;
+     });
 
     let suitableWeapons = weaponsData.filter(w => {
         return w.rarityNum >= operator.rarity - 1 && w.type === operator.weapon;
@@ -677,14 +584,6 @@ function showOperatorDetail(operatorId) {
     const iconUrl = operator.icon ? `media/operators/${operator.icon}` : '';
     const fullImageUrl = operator.fullImage ? `media/operators/full/${operator.fullImage}` : '';
     
-    const elementImageMap = {
-        'Nature': 'Nature.jpg',
-        'Heat': 'fire.jpg',
-        'Physical': 'physic.jpg',
-        'Cryo': 'ice.jpg',
-        'Electric': 'electric.jpg'
-    };
-    
     const jobIcon = operator.class ? `media/job/${operator.class}.webp` : '';
     const elmFile = elementImageMap[operator.element] || '';
     const elmIcon = elmFile ? `media/elements/${elmFile}` : '';
@@ -697,7 +596,7 @@ function showOperatorDetail(operatorId) {
     modalBody.innerHTML = `
         ${fullImageUrl ? `<div class="detail-full-image"><img src="${fullImageUrl}" alt="${operator.name}" onerror="this.parentElement.style.display='none'"></div>` : ''}
         <div class="detail-header">
-            <div class="detail-icon">
+            <div class="detail-icon rarity-${operator.rarity}">
                 ${iconUrl ? `<img src="${iconUrl}" alt="${operator.name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : operator.name.charAt(0)}
             </div>
             <div class="detail-info">
@@ -732,6 +631,15 @@ function showOperatorDetail(operatorId) {
             <h4>角色背景</h4>
             <p class="operator-background" style="color:var(--text-secondary); line-height:1.8; font-size:14px;">
                 ${operator.description}
+            </p>
+        </div>
+        ` : ''}
+        
+        ${operator.trait ? `
+        <div class="detail-section">
+            <h4>角色特性</h4>
+            <p style="color:var(--accent); font-weight:600; font-size:15px;">
+                ${operator.trait}
             </p>
         </div>
         ` : ''}
@@ -809,7 +717,7 @@ function showWeaponDetail(weapon) {
 
     modalBody.innerHTML = `
         <div class="detail-header"><div class="weapon-detail-icon rarity-${weapon.rarityNum}"><img src="${getWeaponImageUrl(weapon)}" alt="${weapon.name}"></div><div class="detail-info"><h2>${weapon.name}</h2><div class="detail-tags"><span class="detail-tag star-tag" style="color: var(--rarity-${weapon.rarityNum}); font-size: 16px; font-weight: bold;">${starText}</span><span class="detail-tag weapon-type-tag"><img src="media/weapon/${weapon.type}.png" alt="${typeName}"></span><span class="detail-tag">${typeName}</span></div></div></div>
-        <div class="detail-section"><h4>屬性</h4><div class="weapon-attributes"><div class="attr-item"><span class="attr-label">主能力</span><span class="attr-value">${weapon.mainStat}</span></div>${weapon.subStat !== '/' ? `<div class="attr-item"><span class="attr-label">副能力</span><span class="attr-value">${weapon.subStat}</span></div>` : ''}<div class="attr-item"><span class="attr-label">技能</span><span class="attr-value">${weapon.skill}</span></div></div></div>
+        <div class="detail-section"><h4>屬性</h4><div class="weapon-attributes"><div class="attr-item"><span class="attr-label">主能力</span><span class="attr-value" style="color: var(--stat-main);">${weapon.mainStat}</span></div>${weapon.subStat !== '/' ? `<div class="attr-item"><span class="attr-label">副能力</span><span class="attr-value" style="color: var(--stat-sub);">${weapon.subStat}</span></div>` : ''}<div class="attr-item"><span class="attr-label">技能</span><span class="attr-value" style="color: var(--stat-skill);">${weapon.skill}</span></div></div></div>
         <div class="detail-section"><h4>推薦基質掉落區域</h4><div class="recommended-gears">${gearsHtml}</div></div>
         <div class="detail-section"><h4>推薦角色</h4><div class="recommended-operators">${opsHtml}</div></div>
     `;
@@ -982,6 +890,11 @@ function bindGearFilterEvents() {
                 }
             }
             
+            // 选择主属性时，清除副属性和技能筛选，避免冲突
+            selectedGearSubStat = null;
+            selectedGearSkill = null;
+            document.querySelectorAll('.gear-substat-btn, .gear-skill-btn').forEach(b => b.classList.remove('active'));
+            
             filterGearWeapons();
         };
     });
@@ -994,10 +907,11 @@ function bindGearFilterEvents() {
                 this.classList.remove('active');
                 selectedGearSubStat = null;
             } else {
-                document.querySelectorAll('.gear-substat-btn, .gear-skill-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.gear-substat-btn, .gear-skill-btn, .gear-mainstat-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 selectedGearSubStat = substat;
                 selectedGearSkill = null;
+                selectedGearMainStats = [];
             }
             
             filterGearWeapons();
@@ -1016,6 +930,7 @@ function bindGearFilterEvents() {
                 this.classList.add('active');
                 selectedGearSkill = skill;
                 selectedGearSubStat = null;
+                selectedGearMainStats = [];
             }
             
             filterGearWeapons();
