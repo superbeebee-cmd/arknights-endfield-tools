@@ -1827,11 +1827,54 @@ body.light-mode {
         radial-gradient(ellipse at bottom right, rgba(0, 168, 255, 0.05) 0%, transparent 50%);
 }
 
+.operator-trait {
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+    line-height: 1.6;
+    background: linear-gradient(135deg, rgba(0,212,170,0.2), rgba(0,168,255,0.15));
+    color: #fff;
+}
+
 body.light-mode .operator-trait {
-    background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(0,168,255,0.12)) !important;
-    color: #0d0d12 !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 2px 10px rgba(0, 212, 170, 0.25) !important;
+    background: #e8e8e8 !important;
+    color: #1a1a2e !important;
+    border: 1px solid #00a8aa !important;
+    box-shadow: none !important;
+}
+
+body.light-mode .teammate-card.rarity-6 {
+    border-left-color: #ff6b35 !important;
+}
+
+body.light-mode .teammate-card.rarity-5 {
+    border-left-color: #ffc107 !important;
+}
+
+body.light-mode .teammate-card.rarity-4 {
+    border-left-color: #9c6bff !important;
+}
+
+body.light-mode .teammate-card.rarity-3 {
+    border-left-color: #4dd0e1 !important;
+}
+
+body.light-mode .card-operator.rarity-6 {
+    border-left-color: #ff6b35 !important;
+}
+
+body.light-mode .card-operator.rarity-5 {
+    border-left-color: #ffc107 !important;
+}
+
+body.light-mode .card-operator.rarity-4 {
+    border-left-color: #9c6bff !important;
+}
+
+body.light-mode .card-operator.rarity-3 {
+    border-left-color: #4dd0e1 !important;
 }
 
 /* ========== Toast 通知 ========== */
