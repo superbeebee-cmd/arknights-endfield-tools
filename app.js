@@ -24,6 +24,70 @@ function initApp() {
     setupWeaponFilters();
     setupGearFilters();
     setupOperatorFilters();
+    setupAddCharacterForm();
+    setupSelectModals();
+}
+
+const LOCAL_OPERATORS_KEY = 'localOperators';
+
+function getLocalOperators() {
+    const stored = localStorage.getItem(LOCAL_OPERATORS_KEY);
+    return stored ? JSON.parse(stored) : [];
+}
+
+function saveLocalOperator(operator, editId = null) {
+    let localOps = getLocalOperators();
+    
+    if (editId) {
+        localOps = localOps.map(op => op.id === editId ? { ...operator, id: editId, isLocal: true } : op);
+    } else {
+        const newId = localOps.length > 0 ? Math.max(...localOps.map(o => o.id)) + 1 : 10000;
+        operator.id = newId;
+        operator.isLocal = true;
+        localOps.push(operator);
+    }
+    
+    localStorage.setItem(LOCAL_OPERATORS_KEY, JSON.stringify(localOps));
+    return operator;
+}
+
+function setupAddCharacterForm() {
+    const form = document.getElementById('add-character-form');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const operator = {
+            name: formData.get('name'),
+            icon: formData.get('icon') || '',
+            fullImage: formData.get('fullImage') || '',
+            rarity: parseInt(formData.get('rarity')),
+            class: formData.get('class'),
+            element: formData.get('element'),
+            weapon: formData.get('weapon'),
+            mainStat: formData.get('mainStat') || '',
+            subStat: formData.get('subStat') || '',
+            trait: formData.get('trait') || '',
+            description: formData.get('description') || '',
+            localTeammates: selectedTeammates,
+            localGear: selectedGear,
+            localWeapons: selectedWeapons,
+            exclusiveWeapon: formData.get('exclusiveWeapon') || ''
+        };
+
+        if (currentEditId) {
+            saveLocalOperator(operator, currentEditId);
+            showToast('角色已更新', 'success');
+        } else {
+            saveLocalOperator(operator);
+            showToast('角色已新增', 'success');
+        }
+        currentEditId = null;
+        closeAddCharacterModal();
+        loadOperators();
+    });
 }
 
 function setupSearch() {
@@ -260,12 +324,389 @@ function setupOperatorFilters() {
     });
 }
 
+let isDragging = false;
+let currentModal = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let modalStartX = 0;
+let modalStartY = 0;
+
 function closeModal() {
+    const modalContent = document.querySelector('#modal .modal');
+    if (modalContent) {
+        modalContent.style.left = '50%';
+        modalContent.style.top = '10%';
+        modalContent.style.transform = 'translateX(-50%)';
+    }
     document.getElementById('modal').classList.remove('active');
     document.body.classList.remove('modal-open');
 }
 
+function closeAddCharacterModal() {
+    const form = document.getElementById('add-character-form');
+    if (form) {
+        const formData = new FormData(form);
+        let hasData = false;
+        for (let [key, value] of formData.entries()) {
+            if (value && value.trim()) {
+                hasData = true;
+                break;
+            }
+        }
+        if (!hasData && (selectedTeammates.length > 0 || selectedGear.length > 0)) {
+            hasData = true;
+        }
+        if (hasData) {
+            if (!confirm('有未儲存的資料，是否要儲存？')) {
+                form.reset();
+                selectedTeammates = [];
+                selectedGear = [];
+                updateTeammatesTags();
+                updateGearTags();
+            }
+        }
+    }
+    const modalContent = document.querySelector('#add-character-modal .modal');
+    if (modalContent) {
+        modalContent.style.left = '50%';
+        modalContent.style.top = '10%';
+        modalContent.style.transform = 'translateX(-50%)';
+    }
+    document.getElementById('add-character-modal').classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+
+function openAddCharacterModal() {
+    const modal = document.getElementById('add-character-modal');
+    const modalContent = modal.querySelector('.modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '10%';
+    modalContent.style.transform = 'translateX(-50%)';
+    modal.classList.add('active');
+    document.body.classList.add('modal-open');
+    
+    currentEditId = null;
+    document.getElementById('add-character-title').textContent = '新增角色';
+    document.getElementById('add-character-form').reset();
+    
+    selectedTeammates = [];
+    selectedGear = [];
+    selectedWeapons = [];
+    updateTeammatesTags();
+    updateGearTags();
+    updateHiddenInputs();
+    
+    document.getElementById('icon-preview').innerHTML = '<span class="image-preview-placeholder">未選擇圖片</span>';
+    document.getElementById('fullimage-preview').innerHTML = '<span class="image-preview-placeholder">未選擇圖片</span>';
+    document.getElementById('char-icon').value = '';
+    document.getElementById('char-fullimage').value = '';
+    document.getElementById('char-icon-file').value = '';
+    document.getElementById('char-fullimage-file').value = '';
+    
+    currentEditId = null;
+}
+
+let selectedTeammates = [];
+let selectedGear = [];
+let selectedWeapons = [];
+let currentSelectType = '';
+let currentEditId = null;
+
+function openSelectModal() {
+    const modalContent = document.querySelector('#select-modal .modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '50%';
+    modalContent.style.transform = 'translate(-50%, -50%)';
+}
+
+function setupSelectModals() {
+    document.getElementById('select-teammates-btn').addEventListener('click', () => {
+        currentSelectType = 'teammates';
+        openSelectModal('選擇推薦隊友', selectedTeammates.slice(), getTeammatesForSelect());
+    });
+    
+    document.getElementById('select-gear-btn').addEventListener('click', () => {
+        currentSelectType = 'gear';
+        openSelectModal('選擇推薦裝備', selectedGear.slice(), getGearForSelect());
+    });
+    
+    document.getElementById('select-weapons-btn').addEventListener('click', () => {
+        currentSelectType = 'weapons';
+        openSelectModal('選擇推薦武器', selectedWeapons.slice(), getWeaponsForSelect());
+    });
+    
+    document.getElementById('select-modal-close').addEventListener('click', closeSelectModal);
+    document.getElementById('select-cancel').addEventListener('click', closeSelectModal);
+    document.getElementById('select-confirm').addEventListener('click', confirmSelect);
+    
+    document.getElementById('select-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'select-modal') closeSelectModal();
+    });
+    
+    setupImageUploads();
+}
+
+function setupImageUploads() {
+    const iconInput = document.getElementById('char-icon-file');
+    const fullimageInput = document.getElementById('char-fullimage-file');
+    
+    iconInput.addEventListener('change', (e) => {
+        handleImageFile(e.target.files[0], 'icon');
+    });
+    
+    fullimageInput.addEventListener('change', (e) => {
+        handleImageFile(e.target.files[0], 'fullimage');
+    });
+}
+
+function handleImageFile(file, type) {
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const base64 = e.target.result;
+        const preview = document.getElementById(`${type}-preview`);
+        const hiddenInput = document.getElementById(`char-${type}`);
+        
+        preview.innerHTML = `<img src="${base64}" alt="Preview">`;
+        hiddenInput.value = base64;
+    };
+    reader.readAsDataURL(file);
+}
+
+function getTeammatesForSelect() {
+    const localOperators = getLocalOperators();
+    const allOperators = [...operatorsData, ...localOperators];
+    return allOperators.map(op => ({
+        id: op.id,
+        name: op.name,
+        icon: op.icon,
+        rarity: op.rarity
+    }));
+}
+
+function getGearForSelect() {
+    const allGearPieces = new Set();
+    operatorsData.forEach(op => {
+        if (op.gearRecommendation && op.gearRecommendation.pieces) {
+            op.gearRecommendation.pieces.forEach(piece => allGearPieces.add(piece));
+        }
+    });
+    return Array.from(allGearPieces).sort().map(piece => ({
+        name: piece,
+        icon: piece
+    }));
+}
+
+function getWeaponsForSelect() {
+    return weaponsData.map(w => {
+        return {
+            name: w.name,
+            icon: w.name,
+            rarity: w.rarityNum,
+            image: getWeaponImageUrl(w)
+        };
+    });
+}
+
+let tempSelections = [];
+
+function openSelectModal(title, selections, items) {
+    const modal = document.getElementById('select-modal');
+    const modalContent = modal.querySelector('.modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '5%';
+    modalContent.style.transform = 'translateX(-50%)';
+    
+    tempSelections = selections;
+    document.getElementById('select-modal-title').textContent = title;
+    const grid = document.getElementById('select-grid');
+    grid.innerHTML = '';
+    
+    let max = 3;
+    if (currentSelectType === 'teammates') max = 3;
+    else if (currentSelectType === 'gear') max = 4;
+    else if (currentSelectType === 'weapons') max = 3;
+    
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'select-item' + (selections.includes(item.name) ? ' selected' : '');
+        div.dataset.value = item.name;
+        
+        let imageHtml = '';
+        if (currentSelectType === 'teammates') {
+            if (item.icon) {
+                imageHtml = `<div class="select-item-image"><img src="media/operators/${item.icon}" alt="${item.name}" onerror="this.parentElement.innerHTML='${item.name.charAt(0)}'"></div>`;
+            } else {
+                imageHtml = `<div class="select-item-image">${item.name.charAt(0)}</div>`;
+            }
+        } else if (currentSelectType === 'gear') {
+            const imgFile = gearImageMap[item.name] || 'item_equip_t4_suit_atk02_body_04.webp';
+            imageHtml = `<div class="select-item-image"><img src="media/gear/${imgFile}" alt="${item.name}" onerror="this.style.display='none'"></div>`;
+        } else if (currentSelectType === 'weapons') {
+            imageHtml = `<div class="select-item-image"><img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'"></div>`;
+        } else {
+            imageHtml = `<div class="select-item-image">${item.name.charAt(0)}</div>`;
+        }
+        
+        div.innerHTML = `
+            ${imageHtml}
+            <div class="select-item-name">${item.name}</div>
+            <div class="select-item-check">✓</div>
+        `;
+        
+        div.addEventListener('click', () => {
+            if (tempSelections.includes(item.name)) {
+                tempSelections = tempSelections.filter(t => t !== item.name);
+                div.classList.remove('selected');
+            } else {
+                if (tempSelections.length >= max) {
+                    showToast(`最多只能選${max}個`, 'warning');
+                    return;
+                }
+                tempSelections.push(item.name);
+                div.classList.add('selected');
+            }
+        });
+        
+        grid.appendChild(div);
+    });
+    
+    document.getElementById('select-modal').classList.add('active');
+}
+
+function closeSelectModal() {
+    document.getElementById('select-modal').classList.remove('active');
+}
+
+function confirmSelect() {
+    if (currentSelectType === 'teammates') {
+        selectedTeammates = tempSelections.slice();
+        updateTeammatesTags();
+    } else if (currentSelectType === 'gear') {
+        selectedGear = tempSelections.slice();
+        updateGearTags();
+    } else if (currentSelectType === 'weapons') {
+        selectedWeapons = tempSelections.slice();
+        updateWeaponsTags();
+    }
+    updateHiddenInputs();
+    closeSelectModal();
+}
+
+function updateTeammatesTags() {
+    const container = document.getElementById('teammates-tags');
+    document.getElementById('teammates-count').textContent = `${selectedTeammates.length}/3`;
+    
+    container.innerHTML = selectedTeammates.map(name => `
+        <span class="selected-tag">
+            ${name}
+            <span class="selected-tag-remove" onclick="removeTeammate('${name}')">×</span>
+        </span>
+    `).join('');
+}
+
+function updateGearTags() {
+    const container = document.getElementById('gear-tags');
+    document.getElementById('gear-count').textContent = `${selectedGear.length}/4`;
+    
+    container.innerHTML = selectedGear.map(name => `
+        <span class="selected-tag">
+            ${name}
+            <span class="selected-tag-remove" onclick="removeGear('${name}')">×</span>
+        </span>
+    `).join('');
+}
+
+function updateWeaponsTags() {
+    const container = document.getElementById('weapons-tags');
+    document.getElementById('weapons-count').textContent = `${selectedWeapons.length}/3`;
+    
+    const exclusiveWeapon = document.getElementById('char-exclusive-weapon').value;
+    
+    container.innerHTML = selectedWeapons.map(name => `
+        <span class="selected-tag ${name === exclusiveWeapon ? 'exclusive-tag' : ''}">
+            ${name === exclusiveWeapon ? '專武 ' : ''}${name}
+            <span class="selected-tag-remove" onclick="setExclusiveWeapon('${name}')" title="設為專武">★</span>
+            <span class="selected-tag-remove" onclick="removeWeapon('${name}')">×</span>
+        </span>
+    `).join('');
+}
+
+function removeTeammate(name) {
+    selectedTeammates = selectedTeammates.filter(t => t !== name);
+    updateTeammatesTags();
+    updateHiddenInputs();
+}
+
+function removeGear(name) {
+    selectedGear = selectedGear.filter(g => g !== name);
+    updateGearTags();
+    updateHiddenInputs();
+}
+
+function removeWeapon(name) {
+    selectedWeapons = selectedWeapons.filter(w => w !== name);
+    const exclusiveWeapon = document.getElementById('char-exclusive-weapon').value;
+    if (exclusiveWeapon === name) {
+        document.getElementById('char-exclusive-weapon').value = '';
+    }
+    updateWeaponsTags();
+    updateHiddenInputs();
+}
+
+function setExclusiveWeapon(name) {
+    document.getElementById('char-exclusive-weapon').value = name;
+    updateWeaponsTags();
+}
+
+function updateHiddenInputs() {
+    document.getElementById('char-teammates').value = selectedTeammates.join(',');
+    document.getElementById('char-gear').value = selectedGear.join(',');
+    document.getElementById('char-weapons').value = selectedWeapons.join(',');
+}
+
 function setupEventListeners() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        const header = modal.querySelector('.modal-header');
+        if (!header) return;
+        
+        header.addEventListener('mousedown', (e) => {
+            if (e.target.closest('button')) return;
+            isDragging = true;
+            currentModal = modal;
+            
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            
+            const rect = modal.getBoundingClientRect();
+            modalStartX = rect.left;
+            modalStartY = rect.top;
+            
+            modal.classList.add('is-dragging');
+        });
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !currentModal) return;
+        e.preventDefault();
+        
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        
+        currentModal.style.transform = 'none';
+        currentModal.style.left = (modalStartX + dx) + 'px';
+        currentModal.style.top = (modalStartY + dy) + 'px';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (currentModal) {
+            currentModal.classList.remove('is-dragging');
+        }
+        isDragging = false;
+        currentModal = null;
+    });
+    
     document.querySelectorAll('nav button').forEach(btn => {
         btn.addEventListener('click', () => {
             const tabId = btn.dataset.tab;
@@ -280,16 +721,138 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-close').addEventListener('click', () => closeModal());
     document.getElementById('modal').addEventListener('click', (e) => {
-        if (e.target.id === 'modal') closeModal();
+        if (e.target.classList.contains('modal-overlay')) closeModal();
     });
+
+    document.getElementById('add-character-close').addEventListener('click', () => closeAddCharacterModal());
+    document.getElementById('cancel-add-character').addEventListener('click', () => closeAddCharacterModal());
+    document.getElementById('add-character-modal').addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) closeAddCharacterModal();
+    });
+    document.getElementById('add-character-btn').addEventListener('click', openAddCharacterModal);
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
+            closeAddCharacterModal();
+            closeAdminLoginModal();
+            closeSelectModal();
         }
     });
+
+    setupAdminLogin();
+}
+
+const ADMIN_PASSWORD_KEY = 'adminPassword';
+const IS_ADMIN_KEY = 'isAdmin';
+
+function setupAdminLogin() {
+    updateAdminButton();
+    
+    document.getElementById('admin-login-btn').addEventListener('click', () => {
+        const isLoggedIn = localStorage.getItem(IS_ADMIN_KEY) === 'true';
+        if (isLoggedIn) {
+            logoutAdmin();
+        } else {
+            openAdminLoginModal();
+        }
+    });
+
+    document.getElementById('admin-login-close').addEventListener('click', () => closeAdminLoginModal());
+    document.getElementById('admin-cancel').addEventListener('click', () => closeAdminLoginModal());
+    document.getElementById('admin-submit').addEventListener('click', submitAdminLogin);
+    
+    document.getElementById('admin-login-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'admin-login-modal') closeAdminLoginModal(e);
+    });
+}
+
+function openAdminLoginModal() {
+    const modal = document.getElementById('admin-login-modal');
+    const modalContent = modal.querySelector('.modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '10%';
+    modalContent.style.transform = 'translateX(-50%)';
+    modal.classList.add('active');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('admin-password').focus();
+    document.getElementById('admin-password').onkeypress = function(e) {
+        if (e.key === 'Enter') {
+            submitAdminLogin();
+        }
+    };
+}
+
+function closeAdminLoginModal(e) {
+    if (isDragging) return;
+    if (e && e.target && e.target.id !== 'admin-login-modal') return;
+    const modalContent = document.querySelector('#admin-login-modal .modal');
+    if (modalContent) {
+        modalContent.style.left = '50%';
+        modalContent.style.top = '10%';
+        modalContent.style.transform = 'translateX(-50%)';
+    }
+    document.getElementById('admin-login-modal').classList.remove('active');
+}
+
+async function submitAdminLogin() {
+    const password = document.getElementById('admin-password').value;
+    if (!password) {
+        showToast('請輸入密碼', 'warning');
+        return;
+    }
+    
+    const storedPasswordHash = localStorage.getItem(ADMIN_PASSWORD_KEY);
+    const inputHash = await sha256(password);
+    
+    if (!storedPasswordHash) {
+        localStorage.setItem(ADMIN_PASSWORD_KEY, inputHash);
+        localStorage.setItem(IS_ADMIN_KEY, 'true');
+        showToast('管理員密碼已設定並登入', 'success');
+    } else if (inputHash === storedPasswordHash) {
+        localStorage.setItem(IS_ADMIN_KEY, 'true');
+        showToast('登入成功', 'success');
+    } else if (password === storedPasswordHash) {
+        localStorage.setItem(ADMIN_PASSWORD_KEY, inputHash);
+        localStorage.setItem(IS_ADMIN_KEY, 'true');
+        showToast('登入成功（密碼已升級加密）', 'success');
+    } else {
+        showToast('密碼錯誤', 'error');
+        return;
+    }
+    
+    closeAdminLoginModal();
+    updateAdminButton();
+}
+
+function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    return crypto.subtle.digest('SHA-256', msgBuffer).then(hash => {
+        const hashArray = Array.from(new Uint8Array(hash));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    });
+}
+
+function logoutAdmin() {
+    localStorage.setItem(IS_ADMIN_KEY, 'false');
+    showToast('已登出', 'info');
+    updateAdminButton();
+}
+
+function updateAdminButton() {
+    const isLoggedIn = localStorage.getItem(IS_ADMIN_KEY) === 'true';
+    const addBtn = document.getElementById('add-character-btn');
+    const loginBtn = document.getElementById('admin-login-btn');
+    
+    if (isLoggedIn) {
+        addBtn.style.display = 'flex';
+        loginBtn.innerHTML = '<span>🔓 登出</span>';
+    } else {
+        addBtn.style.display = 'none';
+        loginBtn.innerHTML = '<span>🔒 管理員</span>';
+    }
 }
 
 function loadWeapons() {
@@ -374,7 +937,8 @@ function loadOperators() {
 
     grid.innerHTML = '';
 
-    let filteredOperators = [...operatorsData];
+    const localOperators = getLocalOperators();
+    let filteredOperators = [...operatorsData, ...localOperators];
 
     if (!selectedOperatorRarities.includes('all')) {
         filteredOperators = filteredOperators.filter(op => selectedOperatorRarities.includes(String(op.rarity)));
@@ -424,7 +988,10 @@ function loadOperators() {
         const card = document.createElement('div');
         card.className = `card card-operator rarity-${op.rarity}`;
         
-        const opIconUrl = op.icon ? `media/operators/${op.icon}` : '';
+        let opIconUrl = op.icon || '';
+        if (opIconUrl && !opIconUrl.startsWith('data:')) {
+            opIconUrl = `media/operators/${opIconUrl}`;
+        }
         const jobIcon = classNames[op.class] ? `media/job/${op.class}.webp` : '';
         const elmFile = elementImageMap[op.element] || '';
         const elmIcon = elmFile ? `media/elements/${elmFile}` : '';
@@ -522,7 +1089,20 @@ function getRecommendedTeammates(operator) {
     const opElement = operator.element;
     const opClass = operator.class;
     
-    operatorsData.forEach(op => {
+    const localOperators = getLocalOperators();
+    const allOps = [...operatorsData, ...localOperators];
+    
+    if (operator.localTeammates && operator.localTeammates.length > 0) {
+        operator.localTeammates.forEach(name => {
+            const matched = allOps.find(op => op.name === name);
+            if (matched) {
+                recommended.push({ ...matched, score: 10 });
+            }
+        });
+        return recommended.slice(0, 3);
+    }
+    
+    allOps.forEach(op => {
         if (op.id === operator.id) return;
         
         let score = 0;
@@ -546,7 +1126,9 @@ function getRecommendedTeammates(operator) {
 }
 
 function showOperatorDetail(operatorId) {
-    const operator = operatorsData.find(op => op.id === operatorId);
+    const localOperators = getLocalOperators();
+    const allOperators = [...operatorsData, ...localOperators];
+    const operator = allOperators.find(op => op.id === operatorId);
     if (!operator) return;
 
     const modalTitle = document.getElementById('modal-title');
@@ -599,37 +1181,70 @@ function showOperatorDetail(operatorId) {
     
     let weaponsHtml = '';
     
-    suitableWeapons.slice(0, 3).forEach(w => {
-        const typeIconUrl = `media/weapon/${w.type}.png`;
-        const typeName = typeNames[w.type] || w.type;
-        const imgUrl = getWeaponImageUrl(w);
-        const isExclusive = operator.exclusiveWeapon && w.name === operator.exclusiveWeapon;
-        
-         weaponsHtml += `
-            <div class="weapon-item ${isExclusive ? 'exclusive-weapon' : ''} rarity-${w.rarityNum}">
-                ${isExclusive ? '<div class="exclusive-badge">專武</div>' : ''}
-                <div class="weapon-image">
-                    <img src="${imgUrl}" alt="${w.name}" onerror="this.style.display='none'">
-                </div>
-                <div class="weapon-info">
-                    <h5>${w.name}</h5>
-                    <div class="weapon-rarity" style="color: var(--rarity-${w.rarityNum}); font-size: 14px;">${'★'.repeat(w.rarityNum)}</div>
-                    <div class="weapon-type">
-                        <img src="${typeIconUrl}" alt="${typeName}" title="${typeName}" style="width: 20px; height: 20px;">
+    if (operator.localWeapons && operator.localWeapons.length > 0) {
+        operator.localWeapons.forEach(wName => {
+            const w = weaponsData.find(weapon => weapon.name === wName);
+            if (w) {
+                const typeIconUrl = `media/weapon/${w.type}.png`;
+                const typeName = typeNames[w.type] || w.type;
+                const imgUrl = getWeaponImageUrl(w);
+                const isExclusive = operator.exclusiveWeapon && w.name === operator.exclusiveWeapon;
+                
+                weaponsHtml += `
+                    <div class="weapon-item ${isExclusive ? 'exclusive-weapon' : ''} rarity-${w.rarityNum}">
+                        ${isExclusive ? '<div class="exclusive-badge">專武</div>' : ''}
+                        <div class="weapon-image">
+                            <img src="${imgUrl}" alt="${w.name}" onerror="this.style.display='none'">
+                        </div>
+                        <div class="weapon-info">
+                            <h5>${w.name}</h5>
+                            <div class="weapon-rarity" style="color: var(--rarity-${w.rarityNum}); font-size: 14px;">${'★'.repeat(w.rarityNum)}</div>
+                            <div class="weapon-type">
+                                <img src="${typeIconUrl}" alt="${typeName}" title="${typeName}" style="width: 20px; height: 20px;">
+                            </div>
+                        </div>
+                        <div class="stats">
+                            <span class="stat-tag stat-main">${w.mainStat}</span>
+                            ${w.subStat !== '/' ? `<span class="stat-tag stat-sub">${w.subStat}</span>` : ''}
+                            <span class="stat-tag stat-skill">${w.skill}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    } else {
+        suitableWeapons.slice(0, 3).forEach(w => {
+            const typeIconUrl = `media/weapon/${w.type}.png`;
+            const typeName = typeNames[w.type] || w.type;
+            const imgUrl = getWeaponImageUrl(w);
+            const isExclusive = operator.exclusiveWeapon && w.name === operator.exclusiveWeapon;
+            
+            weaponsHtml += `
+                <div class="weapon-item ${isExclusive ? 'exclusive-weapon' : ''} rarity-${w.rarityNum}">
+                    ${isExclusive ? '<div class="exclusive-badge">專武</div>' : ''}
+                    <div class="weapon-image">
+                        <img src="${imgUrl}" alt="${w.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="weapon-info">
+                        <h5>${w.name}</h5>
+                        <div class="weapon-rarity" style="color: var(--rarity-${w.rarityNum}); font-size: 14px;">${'★'.repeat(w.rarityNum)}</div>
+                        <div class="weapon-type">
+                            <img src="${typeIconUrl}" alt="${typeName}" title="${typeName}" style="width: 20px; height: 20px;">
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <span class="stat-tag stat-main">${w.mainStat}</span>
+                        ${w.subStat !== '/' ? `<span class="stat-tag stat-sub">${w.subStat}</span>` : ''}
+                        <span class="stat-tag stat-skill">${w.skill}</span>
                     </div>
                 </div>
-                <div class="stats">
-                    <span class="stat-tag stat-main">${w.mainStat}</span>
-                    ${w.subStat !== '/' ? `<span class="stat-tag stat-sub">${w.subStat}</span>` : ''}
-                    <span class="stat-tag stat-skill">${w.skill}</span>
-                </div>
-            </div>
-        `;
-    });
+            `;
+        });
+    }
     
     const starImage = operator.rarity >= 6 ? 'media/level/6star.webp' : (operator.rarity >= 5 ? 'media/level/5star.webp' : 'media/level/4star.webp');
-    const iconUrl = operator.icon ? `media/operators/${operator.icon}` : '';
-    const fullImageUrl = operator.fullImage ? `media/operators/full/${operator.fullImage}` : '';
+    const iconUrl = operator.icon ? (operator.icon.startsWith('data:') ? operator.icon : `media/operators/${operator.icon}`) : '';
+    const fullImageUrl = operator.fullImage ? (operator.fullImage.startsWith('data:') ? operator.fullImage : `media/operators/full/${operator.fullImage}`) : '';
     
     const jobIcon = operator.class ? `media/job/${operator.class}.webp` : '';
     const elmFile = elementImageMap[operator.element] || '';
@@ -726,12 +1341,108 @@ function showOperatorDetail(operatorId) {
                         </div>`;
                     }).join('')}
                 </div>
+            ` : operator.localGear && operator.localGear.length > 0 ? `
+                <div class="weapon-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                    ${operator.localGear.map(piece => {
+                        const imgFile = gearImageMap[piece] || 'item_equip_t4_suit_atk02_body_04.webp';
+                        return `
+                        <div class="gear-item gear-tier-0">
+                            <img src="media/gear/${imgFile}" alt="${piece}" style="width: 60px; height: 60px; object-fit: contain; margin-bottom: 8px; border-radius: 4px;" onerror="this.style.display='none'">
+                            <div>${piece}</div>
+                        </div>`;
+                    }).join('')}
+                </div>
             ` : '<p style="color:var(--text-secondary);">暫無推薦裝備</p>'}
         </div>
         `;
 
+    const isAdmin = localStorage.getItem(IS_ADMIN_KEY) === 'true';
+    
+    if (isAdmin) {
+        modalBody.innerHTML += `
+            <div class="detail-section" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                <button type="button" class="btn btn-primary" onclick="editLocalOperator(${operator.id})">編輯角色</button>
+                <button type="button" class="btn btn-secondary" style="margin-left: 10px;" onclick="deleteLocalOperator(${operator.id})">刪除角色</button>
+            </div>
+        `;
+    }
+    
+    const modalContent = document.querySelector('#modal .modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '10%';
+    modalContent.style.transform = 'translateX(-50%)';
     document.getElementById('modal').classList.add('active');
     document.body.classList.add('modal-open');
+}
+
+function editLocalOperator(operatorId) {
+    closeModal();
+    
+    const localOperators = getLocalOperators();
+    let operator = localOperators.find(op => op.id === operatorId);
+    
+    if (!operator) {
+        operator = operatorsData.find(op => op.id === operatorId);
+    }
+    
+    if (!operator) return;
+    
+    openAddCharacterModal();
+    
+    setTimeout(() => {
+        document.getElementById('add-character-title').textContent = '編輯角色';
+        document.getElementById('char-name').value = operator.name || '';
+        document.getElementById('char-icon').value = operator.icon || '';
+        document.getElementById('char-fullimage').value = operator.fullImage || '';
+        document.getElementById('char-rarity').value = operator.rarity || '';
+        document.getElementById('char-class').value = operator.class || '';
+        document.getElementById('char-element').value = operator.element || '';
+        document.getElementById('char-weapon').value = operator.weapon || '';
+        document.getElementById('char-mainstat').value = operator.mainStat || '';
+        document.getElementById('char-substat').value = operator.subStat || '';
+        document.getElementById('char-trait').value = operator.trait || '';
+        document.getElementById('char-description').value = operator.description || '';
+        
+        selectedTeammates = operator.localTeammates || operator.teammates || [];
+        selectedGear = operator.localGear || operator.gearRecommendation?.pieces || [];
+        selectedWeapons = operator.localWeapons || [];
+        document.getElementById('char-exclusive-weapon').value = operator.exclusiveWeapon || '';
+        updateTeammatesTags();
+        updateGearTags();
+        updateWeaponsTags();
+        updateHiddenInputs();
+        
+        if (operator.icon) {
+            const preview = document.getElementById('icon-preview');
+            let src = operator.icon;
+            if (!src.startsWith('data:')) {
+                src = `media/operators/${src}`;
+            }
+            preview.innerHTML = `<img src="${src}" alt="Preview" onerror="this.style.display='none'">`;
+        }
+        if (operator.fullImage) {
+            const preview = document.getElementById('fullimage-preview');
+            let src = operator.fullImage;
+            if (!src.startsWith('data:')) {
+                src = `media/operators/full/${src}`;
+            }
+            preview.innerHTML = `<img src="${src}" alt="Preview" onerror="this.style.display='none'">`;
+        }
+        
+        currentEditId = operator.isLocal || operator.id >= 10000 ? operator.id : null;
+    }, 100);
+}
+
+function deleteLocalOperator(operatorId) {
+    if (!confirm('確定要刪除這個角色嗎？')) return;
+    
+    let localOperators = getLocalOperators();
+    localOperators = localOperators.filter(op => op.id !== operatorId);
+    localStorage.setItem(LOCAL_OPERATORS_KEY, JSON.stringify(localOperators));
+    
+    closeModal();
+    showToast('角色已刪除', 'success');
+    loadOperators();
 }
 
 function showWeaponDetail(weapon) {
@@ -748,7 +1459,6 @@ function showWeaponDetail(weapon) {
     const recommendedGears = getRecommendedGears(weapon);
     const recommendedOps = window.operatorsData ? getRecommendedOperators(weapon) : [];
 
-    // 星數文字（★★★★★）
     const starText = '★'.repeat(weapon.rarityNum);
 
     let gearsHtml = recommendedGears.length > 0 ? recommendedGears.map(gear => {
@@ -769,6 +1479,10 @@ function showWeaponDetail(weapon) {
         <div class="detail-section"><h4>推薦角色</h4><div class="recommended-operators">${opsHtml}</div></div>
     `;
 
+    const modalContent = modal.querySelector('.modal');
+    modalContent.style.left = '50%';
+    modalContent.style.top = '10%';
+    modalContent.style.transform = 'translateX(-50%)';
     modal.classList.add('active');
     document.body.classList.add('modal-open');
 }

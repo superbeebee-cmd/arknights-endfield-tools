@@ -23,6 +23,12 @@
                     <button data-tab="weapons">武器</button>
                     <button data-tab="gears">基質</button>
                 </nav>
+                <button class="add-character-btn" id="add-character-btn" title="新增角色" style="display:none;">
+                    <span>+ 新增角色</span>
+                </button>
+                <button class="admin-btn" id="admin-login-btn" title="管理員登入">
+                    <span>🔒 管理員</span>
+                </button>
                 <button class="theme-toggle" id="theme-toggle" title="切換明暗主題">
                     <span class="theme-icon">☀️</span>
                 </button>
@@ -153,6 +159,193 @@
                 <button class="modal-close" id="modal-close">&times;</button>
             </div>
             <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="admin-login-modal">
+        <div class="modal modal-admin-login">
+            <div class="modal-header">
+                <h3>管理員登入</h3>
+                <button class="modal-close" id="admin-login-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="admin-password">密碼</label>
+                    <input type="password" id="admin-password" placeholder="輸入管理員密碼">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="admin-cancel">取消</button>
+                    <button type="button" class="btn btn-primary" id="admin-submit">登入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="select-modal">
+        <div class="modal modal-select">
+            <div class="modal-header">
+                <h3 id="select-modal-title">選擇</h3>
+                <button class="modal-close" id="select-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="select-grid" id="select-grid"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="select-cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="select-confirm">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="add-character-modal">
+        <div class="modal modal-add-character">
+            <div class="modal-header">
+                <h3 id="add-character-title">新增角色</h3>
+                <button class="modal-close" id="add-character-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-character-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-name">角色名字 *</label>
+                            <input type="text" id="char-name" name="name" required placeholder="輸入角色名稱">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>角色icon (位於 media/operators/)</label>
+                            <div class="image-upload">
+                                <input type="file" id="char-icon-file" accept="image/*" style="display:none">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('char-icon-file').click()">選擇圖片</button>
+                                <div class="image-preview" id="icon-preview">
+                                    <span class="image-preview-placeholder">未選擇圖片</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="char-icon" name="icon">
+                        </div>
+                        <div class="form-group">
+                            <label>角色全身圖片 (位於 media/operators/full/)</label>
+                            <div class="image-upload">
+                                <input type="file" id="char-fullimage-file" accept="image/*" style="display:none">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('char-fullimage-file').click()">選擇圖片</button>
+                                <div class="image-preview" id="fullimage-preview">
+                                    <span class="image-preview-placeholder">未選擇圖片</span>
+                                </div>
+                            </div>
+                            <input type="hidden" id="char-fullimage" name="fullImage">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-rarity">星數 *</label>
+                            <select id="char-rarity" name="rarity" required>
+                                <option value="">選擇星數</option>
+                                <option value="6">六星</option>
+                                <option value="5">五星</option>
+                                <option value="4">四星</option>
+                                <option value="3">三星</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="char-class">職業 *</label>
+                            <select id="char-class" name="class" required>
+                                <option value="">選擇職業</option>
+                                <option value="Striker">突擊</option>
+                                <option value="Guard">近衛</option>
+                                <option value="Caster">術師</option>
+                                <option value="Vanguard">先鋒</option>
+                                <option value="Defender">重裝</option>
+                                <option value="Support">輔助</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-element">屬性 *</label>
+                            <select id="char-element" name="element" required>
+                                <option value="">選擇屬性</option>
+                                <option value="Nature">自然</option>
+                                <option value="Heat">灼熱</option>
+                                <option value="Physical">物理</option>
+                                <option value="Cryo">寒冷</option>
+                                <option value="Electric">電擊</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="char-weapon">武器 *</label>
+                            <select id="char-weapon" name="weapon" required>
+                                <option value="">選擇武器類型</option>
+                                <option value="Sword">單手劍</option>
+                                <option value="Greatsword">雙手劍</option>
+                                <option value="Polearm">長柄武器</option>
+                                <option value="Arts Unit">施策單元</option>
+                                <option value="Handcannon">手銃</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-mainstat">主屬性</label>
+                            <select id="char-mainstat" name="mainStat">
+                                <option value="">選擇主屬性</option>
+                                <option value="力量">力量</option>
+                                <option value="敏捷">敏捷</option>
+                                <option value="智識">智識</option>
+                                <option value="意志">意志</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="char-substat">副屬性</label>
+                            <select id="char-substat" name="subStat">
+                                <option value="">選擇副屬性</option>
+                                <option value="力量">力量</option>
+                                <option value="敏捷">敏捷</option>
+                                <option value="智識">智識</option>
+                                <option value="意志">意志</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-trait">角色特性</label>
+                            <textarea id="char-trait" name="trait" rows="2" placeholder="輸入角色特性描述"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="char-description">角色背景</label>
+                            <textarea id="char-description" name="description" rows="3" placeholder="輸入角色背景描述"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>推薦隊友 (最多選3個) <span id="teammates-count">0/3</span></label>
+                            <button type="button" class="btn btn-secondary" id="select-teammates-btn">選擇推薦隊友</button>
+                            <div class="selected-tags" id="teammates-tags"></div>
+                            <input type="hidden" id="char-teammates" name="teammates">
+                        </div>
+                        <div class="form-group">
+                            <label>推薦裝備 (最多選4個) <span id="gear-count">0/4</span></label>
+                            <button type="button" class="btn btn-secondary" id="select-gear-btn">選擇推薦裝備</button>
+                            <div class="selected-tags" id="gear-tags"></div>
+                            <input type="hidden" id="char-gear" name="gear">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>推薦武器 (最多選3個) <span id="weapons-count">0/3</span></label>
+                            <button type="button" class="btn btn-secondary" id="select-weapons-btn">選擇推薦武器</button>
+                            <div class="selected-tags" id="weapons-tags"></div>
+                            <input type="hidden" id="char-weapons" name="weapons">
+                            <input type="hidden" id="char-exclusive-weapon" name="exclusiveWeapon">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-add-character">取消</button>
+                        <button type="submit" class="btn btn-primary">儲存角色</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
