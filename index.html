@@ -213,26 +213,24 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>角色icon (位於 media/operators/)</label>
-                            <div class="image-upload">
-                                <input type="file" id="char-icon-file" accept="image/*" style="display:none">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('char-icon-file').click()">選擇圖片</button>
-                                <div class="image-preview" id="icon-preview">
-                                    <span class="image-preview-placeholder">未選擇圖片</span>
-                                </div>
+                            <label for="char-icon">角色icon</label>
+                            <div class="image-picker-row">
+                                <input type="text" id="char-icon" name="icon" placeholder="輸入檔案名稱">
+                                <button type="button" class="btn btn-secondary" id="pick-icon-btn">選擇圖片</button>
                             </div>
-                            <input type="hidden" id="char-icon" name="icon">
+                            <div class="image-preview" id="icon-preview">
+                                <span class="image-preview-placeholder">無圖片</span>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label>角色全身圖片 (位於 media/operators/full/)</label>
-                            <div class="image-upload">
-                                <input type="file" id="char-fullimage-file" accept="image/*" style="display:none">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('char-fullimage-file').click()">選擇圖片</button>
-                                <div class="image-preview" id="fullimage-preview">
-                                    <span class="image-preview-placeholder">未選擇圖片</span>
-                                </div>
+                            <label for="char-fullimage">角色全身圖片</label>
+                            <div class="image-picker-row">
+                                <input type="text" id="char-fullimage" name="fullImage" placeholder="輸入檔案名稱">
+                                <button type="button" class="btn btn-secondary" id="pick-fullimage-btn">選擇圖片</button>
                             </div>
-                            <input type="hidden" id="char-fullimage" name="fullImage">
+                            <div class="image-preview" id="fullimage-preview">
+                                <span class="image-preview-placeholder">無圖片</span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -359,7 +357,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script src="config.js"></script>
-    <script src="operators_official.js"></script>
+    <script src="operators_local.js"></script>
     <script src="weapons.js"></script>
     <script src="gears.js"></script>
     <script src="utils.js"></script>

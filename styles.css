@@ -2405,6 +2405,20 @@ body.light-mode .add-character-btn:hover {
     padding: 4px;
 }
 
+.image-picker-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.image-picker-row input {
+    flex: 1;
+}
+
+.image-picker-row button {
+    flex-shrink: 0;
+}
+
 /* ========== Admin Button ========== */
 .admin-btn {
     background: transparent;

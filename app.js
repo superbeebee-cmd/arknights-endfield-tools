@@ -35,6 +35,74 @@ function getLocalOperators() {
     return stored ? JSON.parse(stored) : [];
 }
 
+let localOperatorsFileHandle = null;
+
+async function saveToFile(operators) {
+    const exportData = operators.map(op => ({
+        id: op.id,
+        name: op.name,
+        cnName: op.cnName || op.name,
+        enName: op.enName || '',
+        rarity: op.rarity,
+        class: op.class,
+        element: op.element,
+        weapon: op.weapon,
+        faction: op.faction || '',
+        description: op.description || '',
+        trait: op.trait || '',
+        exclusiveWeapon: op.exclusiveWeapon || '',
+        mainStat: op.mainStat || '',
+        subStat: op.subStat || '',
+        tags: op.tags || [],
+        icon: op.icon || '',
+        fullImage: op.fullImage || '',
+        gearRecommendation: op.gearRecommendation ? {
+            setName: op.gearRecommendation.setName || '',
+            pieces: op.gearRecommendation.pieces || []
+        } : null,
+        localTeammates: op.localTeammates || [],
+        localGear: op.localGear || [],
+        localWeapons: op.localWeapons || []
+    }));
+    
+    const jsContent = `// 本地角色資料\n// Auto-generated\n\nconst operatorsLocalData = ${JSON.stringify(exportData, null, 2)};\n`;
+    
+    try {
+        let fileHandle = localOperatorsFileHandle;
+        
+        if (!fileHandle) {
+            try {
+                const handles = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'JavaScript',
+                        accept: {'application/javascript': ['.js']},
+                    }],
+                    excludeAcceptAllOption: true,
+                    multiple: false,
+                });
+                fileHandle = handles[0];
+                localOperatorsFileHandle = fileHandle;
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error(err);
+                }
+                showToast('請選擇 operators_local.js 檔案位置', 'warning');
+                return false;
+            }
+        }
+        
+        if (fileHandle) {
+            const writable = await fileHandle.createWritable();
+            await writable.write(jsContent);
+            await writable.close();
+            return true;
+        }
+    } catch (err) {
+        console.error('File save error:', err);
+    }
+    return false;
+}
+
 function saveLocalOperator(operator, editId = null) {
     let localOps = getLocalOperators();
     
@@ -48,6 +116,9 @@ function saveLocalOperator(operator, editId = null) {
     }
     
     localStorage.setItem(LOCAL_OPERATORS_KEY, JSON.stringify(localOps));
+    
+    saveToFile(localOps);
+    
     return operator;
 }
 
@@ -396,12 +467,10 @@ function openAddCharacterModal() {
     updateGearTags();
     updateHiddenInputs();
     
-    document.getElementById('icon-preview').innerHTML = '<span class="image-preview-placeholder">未選擇圖片</span>';
-    document.getElementById('fullimage-preview').innerHTML = '<span class="image-preview-placeholder">未選擇圖片</span>';
+    document.getElementById('icon-preview').innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
+    document.getElementById('fullimage-preview').innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
     document.getElementById('char-icon').value = '';
     document.getElementById('char-fullimage').value = '';
-    document.getElementById('char-icon-file').value = '';
-    document.getElementById('char-fullimage-file').value = '';
     
     currentEditId = null;
 }
@@ -411,13 +480,6 @@ let selectedGear = [];
 let selectedWeapons = [];
 let currentSelectType = '';
 let currentEditId = null;
-
-function openSelectModal() {
-    const modalContent = document.querySelector('#select-modal .modal');
-    modalContent.style.left = '50%';
-    modalContent.style.top = '50%';
-    modalContent.style.transform = 'translate(-50%, -50%)';
-}
 
 function setupSelectModals() {
     document.getElementById('select-teammates-btn').addEventListener('click', () => {
@@ -443,35 +505,76 @@ function setupSelectModals() {
         if (e.target.id === 'select-modal') closeSelectModal();
     });
     
-    setupImageUploads();
+    setupImagePreviews();
 }
 
-function setupImageUploads() {
-    const iconInput = document.getElementById('char-icon-file');
-    const fullimageInput = document.getElementById('char-fullimage-file');
+function setupImagePreviews() {
+    const iconInput = document.getElementById('char-icon');
+    const fullimageInput = document.getElementById('char-fullimage');
+    const pickIconBtn = document.getElementById('pick-icon-btn');
+    const pickFullimageBtn = document.getElementById('pick-fullimage-btn');
     
-    iconInput.addEventListener('change', (e) => {
-        handleImageFile(e.target.files[0], 'icon');
+    iconInput.addEventListener('input', () => {
+        const filename = iconInput.value.trim();
+        const preview = document.getElementById('icon-preview');
+        if (filename) {
+            preview.innerHTML = `<img src="media/operators/${filename}" alt="Preview" onerror="this.style.display='none'">`;
+        } else {
+            preview.innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
+        }
     });
     
-    fullimageInput.addEventListener('change', (e) => {
-        handleImageFile(e.target.files[0], 'fullimage');
+    fullimageInput.addEventListener('input', () => {
+        const filename = fullimageInput.value.trim();
+        const preview = document.getElementById('fullimage-preview');
+        if (filename) {
+            preview.innerHTML = `<img src="media/operators/full/${filename}" alt="Preview" onerror="this.style.display='none'">`;
+        } else {
+            preview.innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
+        }
     });
-}
-
-function handleImageFile(file, type) {
-    if (!file) return;
     
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const base64 = e.target.result;
-        const preview = document.getElementById(`${type}-preview`);
-        const hiddenInput = document.getElementById(`char-${type}`);
-        
-        preview.innerHTML = `<img src="${base64}" alt="Preview">`;
-        hiddenInput.value = base64;
-    };
-    reader.readAsDataURL(file);
+    pickIconBtn.addEventListener('click', async () => {
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Images',
+                    accept: {'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp']},
+                }],
+                excludeAcceptAllOption: false,
+                multiple: false,
+            });
+            const file = await handle.getFile();
+            const filename = file.name;
+            iconInput.value = filename;
+            iconInput.dispatchEvent(new Event('input'));
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error(err);
+            }
+        }
+    });
+    
+    pickFullimageBtn.addEventListener('click', async () => {
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Images',
+                    accept: {'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp']},
+                }],
+                excludeAcceptAllOption: false,
+                multiple: false,
+            });
+            const file = await handle.getFile();
+            const filename = file.name;
+            fullimageInput.value = filename;
+            fullimageInput.dispatchEvent(new Event('input'));
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error(err);
+            }
+        }
+    });
 }
 
 function getTeammatesForSelect() {
@@ -988,10 +1091,7 @@ function loadOperators() {
         const card = document.createElement('div');
         card.className = `card card-operator rarity-${op.rarity}`;
         
-        let opIconUrl = op.icon || '';
-        if (opIconUrl && !opIconUrl.startsWith('data:')) {
-            opIconUrl = `media/operators/${opIconUrl}`;
-        }
+        const opIconUrl = op.icon ? `media/operators/${op.icon}` : '';
         const jobIcon = classNames[op.class] ? `media/job/${op.class}.webp` : '';
         const elmFile = elementImageMap[op.element] || '';
         const elmIcon = elmFile ? `media/elements/${elmFile}` : '';
@@ -1243,8 +1343,8 @@ function showOperatorDetail(operatorId) {
     }
     
     const starImage = operator.rarity >= 6 ? 'media/level/6star.webp' : (operator.rarity >= 5 ? 'media/level/5star.webp' : 'media/level/4star.webp');
-    const iconUrl = operator.icon ? (operator.icon.startsWith('data:') ? operator.icon : `media/operators/${operator.icon}`) : '';
-    const fullImageUrl = operator.fullImage ? (operator.fullImage.startsWith('data:') ? operator.fullImage : `media/operators/full/${operator.fullImage}`) : '';
+    const iconUrl = operator.icon ? `media/operators/${operator.icon}` : '';
+    const fullImageUrl = operator.fullImage ? `media/operators/full/${operator.fullImage}` : '';
     
     const jobIcon = operator.class ? `media/job/${operator.class}.webp` : '';
     const elmFile = elementImageMap[operator.element] || '';
@@ -1398,14 +1498,35 @@ function editLocalOperator(operatorId) {
         document.getElementById('char-class').value = operator.class || '';
         document.getElementById('char-element').value = operator.element || '';
         document.getElementById('char-weapon').value = operator.weapon || '';
-        document.getElementById('char-mainstat').value = operator.mainStat || '';
-        document.getElementById('char-substat').value = operator.subStat || '';
+        
+        const mainStatMap = {
+            '力量提升': '力量', '敏捷提升': '敏捷', '智識提升': '智識', '意志提升': '意志',
+            '力量': '力量', '敏捷': '敏捷', '智識': '智識', '意志': '意志'
+        };
+        const subStatMap = {
+            '力量提升': '力量', '敏捷提升': '敏捷', '智識提升': '智識', '意志提升': '意志',
+            '攻擊提升': '力量', '物理傷害提升': '力量', '灼熱傷害提升': '力量', '寒冷傷害提升': '力量',
+            '自然傷害提升': '力量', '暴擊率提升': '力量', '法術提升': '智識',
+            '源石技藝強度提升': '智識', '終結技充能效率提升': '意志', '治療效率提升': '智識', '生命力': '力量',
+            '力量': '力量', '敏捷': '敏捷', '智識': '智識', '意志': '意志'
+        };
+        
+        document.getElementById('char-mainstat').value = mainStatMap[operator.mainStat] || operator.mainStat || '';
+        document.getElementById('char-substat').value = subStatMap[operator.subStat] || operator.subStat || '';
+        
         document.getElementById('char-trait').value = operator.trait || '';
         document.getElementById('char-description').value = operator.description || '';
         
         selectedTeammates = operator.localTeammates || operator.teammates || [];
         selectedGear = operator.localGear || operator.gearRecommendation?.pieces || [];
         selectedWeapons = operator.localWeapons || [];
+        
+        if (selectedWeapons.length === 0 && operator.weapon) {
+            const suitableWeapons = weaponsData.filter(w => w.rarityNum >= operator.rarity - 1 && w.type === operator.weapon);
+            suitableWeapons.sort((a, b) => b.rarityNum - a.rarityNum);
+            selectedWeapons = suitableWeapons.slice(0, 3).map(w => w.name);
+        }
+        
         document.getElementById('char-exclusive-weapon').value = operator.exclusiveWeapon || '';
         updateTeammatesTags();
         updateGearTags();
@@ -1413,20 +1534,14 @@ function editLocalOperator(operatorId) {
         updateHiddenInputs();
         
         if (operator.icon) {
-            const preview = document.getElementById('icon-preview');
-            let src = operator.icon;
-            if (!src.startsWith('data:')) {
-                src = `media/operators/${src}`;
-            }
-            preview.innerHTML = `<img src="${src}" alt="Preview" onerror="this.style.display='none'">`;
+            document.getElementById('icon-preview').innerHTML = `<img src="media/operators/${operator.icon}" alt="Preview" onerror="this.style.display='none'">`;
+        } else {
+            document.getElementById('icon-preview').innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
         }
         if (operator.fullImage) {
-            const preview = document.getElementById('fullimage-preview');
-            let src = operator.fullImage;
-            if (!src.startsWith('data:')) {
-                src = `media/operators/full/${src}`;
-            }
-            preview.innerHTML = `<img src="${src}" alt="Preview" onerror="this.style.display='none'">`;
+            document.getElementById('fullimage-preview').innerHTML = `<img src="media/operators/full/${operator.fullImage}" alt="Preview" onerror="this.style.display='none'">`;
+        } else {
+            document.getElementById('fullimage-preview').innerHTML = '<span class="image-preview-placeholder">無圖片</span>';
         }
         
         currentEditId = operator.isLocal || operator.id >= 10000 ? operator.id : null;
